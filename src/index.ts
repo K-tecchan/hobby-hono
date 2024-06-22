@@ -4,7 +4,12 @@ import { Hono } from 'hono'
 const app = new Hono()
 
 app.get('/', (c) => {
-  return c.text('Hello Hono!')
+  return c.json({ message: 'Hello World!' })
+})
+
+app.get('/hello/:id/:fuga', (c) => {
+  const {id, fuga} = c.req.param()
+  return c.text(`${id} & ${fuga}`)
 })
 
 const port = 3000
