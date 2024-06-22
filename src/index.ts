@@ -24,6 +24,13 @@ app.get(
 	},
 );
 
+app.get("/greet", zValidator("query", z.object({ name: z.string() })), (c) => {
+	console.log(c.req.path);
+	console.log(c.req.query());
+	const { name } = c.req.valid("query");
+	return c.text(`Hello ${name}`);
+});
+
 const port = 3000;
 console.log(`Server is running on port ${port}`);
 
