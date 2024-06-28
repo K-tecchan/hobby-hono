@@ -1,6 +1,7 @@
 import { serve } from "@hono/node-server";
 import { z, createRoute, OpenAPIHono } from "@hono/zod-openapi";
 import { zValidator } from "@hono/zod-validator";
+import { swaggerUI } from "@hono/swagger-ui";
 
 const app = new OpenAPIHono();
 
@@ -84,6 +85,8 @@ app.doc("/doc", {
 		version: "1.0.0",
 	},
 });
+
+app.get("/ui", swaggerUI({ url: "/doc" }));
 
 const port = 3000;
 console.log(`Server is running on port ${port}`);
