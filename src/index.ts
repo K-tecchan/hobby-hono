@@ -1,9 +1,8 @@
 import { serve } from "@hono/node-server";
-import { Hono } from "hono";
-import { z } from "zod";
+import { z, createRoute, OpenAPIHono } from "@hono/zod-openapi";
 import { zValidator } from "@hono/zod-validator";
 
-const app = new Hono();
+const app = new OpenAPIHono();
 
 app.get("/", (c) => {
 	return c.json({ message: "Hello World!" });
@@ -44,6 +43,47 @@ app.get(
 		return c.text(`Hello ${name}!! Your age is ${age}`);
 	},
 );
+
+const route = createRoute({
+	method: "get",
+	path: "/test-api/{id}",
+	request: {
+		params: z.object({
+			id: z.string().regex(/^\d+$/, "Invalid Id format"),
+		}),
+		query: z.object({
+			name: z.string().min(1, "Name cannot be empty"),
+		}),
+	},
+	responses: {
+		200: {
+			content: {
+				"application/json": {
+					schema: z.object({
+						id: z.string().openapi({ example: "100" }),
+						name: z.string().openapi({ example: "John" }),
+					}),
+				},
+			},
+			description: "Success Response",
+		},
+	},
+});
+
+app.openapi(route, (c) => {
+	const { id } = c.req.valid("param");
+	const { name } = c.req.valid("query");
+	return c.json({ id, name });
+});
+
+app.doc("/doc", {
+	openapi: "3.0.0",
+	info: {
+		title: "Test API",
+		description: "Test API for testing",
+		version: "1.0.0",
+	},
+});
 
 const port = 3000;
 console.log(`Server is running on port ${port}`);
