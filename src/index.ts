@@ -31,6 +31,20 @@ app.get("/greet", zValidator("query", z.object({ name: z.string() })), (c) => {
 	return c.text(`Hello ${name}`);
 });
 
+app.get(
+	"/:name",
+	zValidator("param", z.object({ name: z.string() })),
+	zValidator(
+		"query",
+		z.object({ age: z.string().regex(/^\d+$/, "Invalid Id format") }),
+	),
+	(c) => {
+		const { name } = c.req.valid("param");
+		const { age } = c.req.valid("query");
+		return c.text(`Hello ${name}!! Your age is ${age}`);
+	},
+);
+
 const port = 3000;
 console.log(`Server is running on port ${port}`);
 
