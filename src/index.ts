@@ -31,7 +31,7 @@ app.get("/greet", zValidator("query", z.object({ name: z.string() })), (c) => {
 });
 
 app.get(
-	"/:name",
+	"/hoge/:name",
 	zValidator("param", z.object({ name: z.string() })),
 	zValidator(
 		"query",
